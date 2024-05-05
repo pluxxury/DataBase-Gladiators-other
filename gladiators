@@ -1,0 +1,168 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Гладиатор
+{
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+            Secutor secutor = new Secutor("секутор", "Данил");
+            secutor.PrintCombatSystem();
+            Dimacher dimacher = new Dimacher("димахер", "Максим");
+            dimacher.PrintCombatSystem();
+            Lacvearium lacvearium = new Lacvearium("лаквеарий", "Олег");
+            lacvearium.PrintCombatSystem();
+            Orders orders = new Orders("велит", "Дмитрий");
+            orders.PrintCombatSystem();
+            Andabat andabat = new Andabat("андабат", "Андрей");
+            andabat.PrintCombatSystem();
+            Essedarium essedarium = new Essedarium("эсседарий", "Владимир");
+            essedarium.PrintCombatSystem();
+        }
+    }
+    interface InterfaceGladiator
+    {
+        string TypeGladiator { get; }
+        string Name { get; }
+    }
+    abstract class Gladiator
+    {
+        protected string TypeGlatiator;
+        protected string Name;
+
+        abstract public void PrintCombatSystem();
+
+        virtual public void PrintGladiator(string name, string typeGladiator)
+        {
+            Console.WriteLine($"Меня зовут {name} и я гладиатор типа {typeGladiator}");
+        }
+    }
+    class Secutor : Gladiator, InterfaceGladiator
+    {
+        public Secutor(string typeGladiator, string name)
+        {
+            Name = name;
+            TypeGlatiator = typeGladiator;
+        }
+        public string Name { get; private set; }
+        public string TypeGladiator { get; private set; }
+
+        public override void PrintGladiator(string name, string typeGladiator)
+        {
+            base.PrintGladiator(typeGladiator, name);
+        }
+
+        public override void PrintCombatSystem()
+        {
+            PrintGladiator(Name, TypeGladiator);
+            Console.WriteLine($"так как я {TypeGladiator}, то я дерусь гладиолусом и щитом");
+        }
+    }
+    class Dimacher : Gladiator, InterfaceGladiator
+    {
+        public Dimacher(string typeGladiator, string name)
+        {
+            Name = name;
+            TypeGlatiator = typeGladiator;
+        }
+        public string Name { get; private set; }
+        public string TypeGladiator { get; private set; }
+
+        public override void PrintGladiator(string name, string typeGladiator)
+        {
+            base.PrintGladiator(name, typeGladiator);
+        }
+
+        public override void PrintCombatSystem()
+        {
+            PrintGladiator(Name, TypeGladiator);
+            Console.WriteLine($"так как я {TypeGladiator}, то я дерусь двумая гладиолусами");
+        }
+    }
+    class Lacvearium : Gladiator, InterfaceGladiator
+    {
+        public Lacvearium(string typeGladiator, string name)
+        {
+            Name = name;
+            TypeGlatiator = typeGladiator;
+        }
+        public string Name { get; private set; }
+        public string TypeGladiator { get; private set; }
+
+        public override void PrintGladiator(string name, string typeGladiator)
+        {
+            base.PrintGladiator(name, typeGladiator);
+        }
+        public override void PrintCombatSystem()
+        {
+            PrintGladiator(Name, TypeGladiator);
+            Console.WriteLine($"так как я {TypeGladiator}, то я дерусь копьем с лассом");
+        }
+    }
+    class Orders : Gladiator, InterfaceGladiator
+    {
+        public Orders(string typeGladiator, string name)
+        {
+            Name = name;
+            TypeGlatiator = typeGladiator;
+        }
+        public string Name { get; private set; }
+        public string TypeGladiator { get; private set; }
+
+        public override void PrintGladiator(string name, string typeGladiator)
+        {
+            base.PrintGladiator(typeGladiator, name);
+        }
+        public override void PrintCombatSystem()
+        {
+            PrintGladiator(Name, TypeGladiator);
+            Console.WriteLine($"так как я {TypeGladiator}, то я дерусь копьем и щитом");
+        }
+    }
+    class Andabat : Gladiator, InterfaceGladiator
+    {
+        public Andabat(string typeGladiator, string name)
+        {
+            Name = name;
+            TypeGlatiator = typeGladiator;
+        }
+        public string Name { get; private set; }
+        public string TypeGladiator { get; private set; }
+
+        public override void PrintGladiator(string name, string typeGladiator)
+        {
+            base.PrintGladiator(typeGladiator, name);
+        }
+
+        public override void PrintCombatSystem()
+        {
+            PrintGladiator(Name, TypeGladiator);
+            Console.WriteLine($"так как я {TypeGladiator}, то я дерусь на коне с копьем");
+        }
+    }
+    class Essedarium : Gladiator, InterfaceGladiator
+    {
+        public Essedarium(string typeGladiator, string name)
+        {
+            Name = name;
+            TypeGlatiator = typeGladiator;
+        }
+        public string Name { get; private set; }
+        public string TypeGladiator { get; private set; }
+
+        public override void PrintGladiator(string name, string typeGladiator)
+        {
+            base.PrintGladiator(typeGladiator, name);
+        }
+
+        public override void PrintCombatSystem()
+        {
+            PrintGladiator(Name, TypeGladiator);
+            Console.WriteLine($"так как я {TypeGladiator}, то я дерусь на колеснице с копьем");
+        }
+    }
+}
