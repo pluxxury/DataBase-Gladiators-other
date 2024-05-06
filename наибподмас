@@ -1,0 +1,45 @@
+               Code, Compile, Run and Debug C# program online.
+Write your code in this editor and press "Run" button to execute it.
+
+*******************************************************************************/
+using System;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        int[] array = { 1,1,1,1,2,2,2,50,8,8,9,9,9,44,44,44,44,44,44,44,44,44,9,5,8000000,2,2,1,1 };
+        int maxLength = 1;
+        int newNumber = array[0];
+        int oldNumber = array[0]; // Assign default value
+        int oldLength = 0;
+
+        for (int i = 1; i < array.Length; i++)
+        {
+            if (newNumber == array[i])
+            {
+                maxLength++;
+            }
+            else
+            {
+                if (maxLength > oldLength)
+                {
+                    oldLength = maxLength;
+                    oldNumber = newNumber;
+                }
+                maxLength = 1;
+                newNumber = array[i];
+            }
+        }
+
+        if (maxLength > oldLength)
+        {
+            oldLength = maxLength;
+            oldNumber = newNumber;
+        }
+
+        Console.WriteLine("Максималочка подмассива: " + oldLength);
+        Console.WriteLine("Число наибольшего пожмассива: " + oldNumber);
+    }
+}
+
