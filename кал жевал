@@ -4,29 +4,43 @@ class Program
 {
     static void Main(string[] args)
     {
-        int[] array = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-        int maxLength = 0;
+        int[] array = { 1,1,1,1,2,2,2,50,8,8,9,9,9,44,44,44,44,44,44,44,44,44,9,5,8000000,2,2,1,1 };
+        int maxLength = 1;
+        int newNumber = array[0];
+        int oldNumber;
+        int oldLength=0;
         int currentLength = 0;
+     
 
-        for (int i = 0; i < array.Length; i++)
+        for (int i = 1; i < array.Length; i++)
         {
-            currentLength = 1;
-
-            for (int j = i + 1; j < array.Length; j++)
+            if(newNumber==array[i])
             {
-                if (array[j] > array[j - 1])
+                maxLength++;
+            }
+            else
+            {
+                if(maxLength<oldLength)
                 {
-                    currentLength++;
+                oldLength=maxLength;
+                maxLength=1;
+                oldNumber=newNumber;
+                newNumber=array[i];
                 }
                 else
                 {
-                    break;
+                    newNumber=array[i];
+                    maxLength=1;
+                    
                 }
             }
-
-            maxLength = Math.Max(maxLength, currentLength);
         }
-
-        Console.WriteLine("Maximum length of subarray: " + maxLength);
+        
+        if(maxLength>oldLength)
+        {
+            
+        }
+       
+        Console.WriteLine("Максималочка подмассива: " + maxLength);
     }
 } 
