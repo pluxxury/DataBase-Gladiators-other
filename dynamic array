@@ -1,0 +1,173 @@
+using System;
+
+namespace DynamicAray
+{
+internal class Program
+{
+static void RandomNumberArray(int[] numbers)
+{
+Random random = new Random();
+int minRandom = 0;
+int maxRandom = numbers.Length;
+int changeNumber;
+int randomNumber;
+for (int j = 0; j < numbers.Length - 1; j++)
+{
+randomNumber = random.Next(minRandom, maxRandom);
+changeNumber = numbers[j];
+numbers[j] = numbers[randomNumber];
+numbers[randomNumber] = changeNumber;
+
+        }
+    }
+                     
+
+    static int[] SortNumberArray(int[] numbers)
+    {
+        for (int i = 0; i < numbers.Length; i++)
+        {
+            for (int j = 0; j < numbers.Length - 1; j++)
+            {
+                if (numbers[j] > numbers[j + 1])
+                {
+                    int tempNumber = numbers[j];
+                    numbers[j] = numbers[j + 1];
+                    numbers[j + 1] = tempNumber;
+                }
+            }
+        }
+
+        for (int i = 0; i < numbers.Length; i++)
+        {
+            Console.Write($"{numbers[i]} ");
+        }
+        return numbers;
+    }
+
+    static int[] AddNumberArray(int number, int[] array)
+    {
+        int[] ints = new int[array.Length + 1];
+
+        for (int i = 0; i < ints.Length - 1; i++)
+        {
+            ints[i] = array[i];
+        }
+
+        ints[array.Length] = number;
+        return ints;
+    }
+
+    static int[] DeleteNumberArray(int[] numbers)
+    {
+        int index;
+        bool isCkeckInputNumber = false;
+        string comandUser;
+        int[] array = numbers;
+        const string ComandStopInput = "Удалить";
+
+        while (isCkeckInputNumber == false)
+        {
+            Console.WriteLine("Введите индекс удаляеммого объекта");
+            comandUser = Console.ReadLine();
+
+            if (int.TryParse(comandUser, out index))
+            {
+                if (index < numbers.Length)
+                {
+                    array = new int[numbers.Length - 1];
+
+                    for (int i = 0; i < index; i++)
+                        array[i] = numbers[i];
+                    for (int i = index; i < array.Length; i++)
+                        array[i] = numbers[i + 1];
+
+                    isCkeckInputNumber = true;
+
+                }
+                else
+                {
+                    Console.WriteLine("В массиве нет элементов");
+                }
+            }
+            else
+            {
+                if (comandUser == ComandStopInput)
+                    isCkeckInputNumber = true;
+                else
+                {
+                    Console.WriteLine("Вы ввели не число");
+                }
+            }
+        }
+        return array;
+    }
+
+    static void Main(string[] args)
+    {
+
+        int[] numbers = new int[0];
+        bool isStart = true;
+
+        int number;
+
+        string comandDelete = "удалить";
+        string ComandSort = "сортировать";
+        string ComandRandom = "рандом";
+        string ComandExit = "Выход";
+        while (isStart)
+        {
+            Console.Clear();
+            Console.WriteLine("Чтобы отсортировать введите сортировать");
+            Console.WriteLine("Чтобы удалить введите удалить");
+            Console.WriteLine("Чтобы перемешать введите рандом");
+            Console.WriteLine("Чтобы выйти введите Выход");
+
+            for (int i = 0; i < numbers.Length; i++)
+            {
+                Console.Write($"{numbers[i]} ");
+            }
+
+            Console.WriteLine();
+            string comandUser = Console.ReadLine();
+
+            if (int.TryParse(comandUser, out number))
+            {
+                numbers = AddNumberArray(number, numbers);
+            }
+            else
+            {
+                if (comandUser == comandDelete)
+                {
+                    numbers = DeleteNumberArray(numbers);
+                }
+                else
+                {
+                    if (comandUser == ComandSort)
+                    {
+                        numbers = SortNumberArray(numbers);
+                    }
+                    else
+                    {
+                        if (comandUser == ComandRandom)
+                        {
+                            RandomNumberArray(numbers);
+                            for (int i = 0; i < numbers.Length; i++)
+                            {
+                                Console.Write($"{numbers[i]} ");
+                            }
+                        }
+                        else
+                        {
+                            if (comandUser == ComandExit)
+                            {
+                                isStart = false;
+                            }
+                        }
+
+                    }
+                }
+            }
+        }
+    }
+}
+}
