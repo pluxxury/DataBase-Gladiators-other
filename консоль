@@ -1,0 +1,247 @@
+using System;
+
+namespace ConsoleManager
+{
+    class Program
+    {
+        static string login = "admin";
+        static string password = "password";
+
+        static void Main(string[] args)
+        {
+            Console.Title = "Console Manager";
+
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine("Console Manager");
+                Console.WriteLine("------------");
+                Console.WriteLine("1. Login");
+                Console.WriteLine("2. Exit");
+                Console.Write("Choose an option: ");
+
+                int option = int.Parse(Console.ReadLine());
+
+                switch (option)
+                {
+                    case 1:
+                        Login();
+                        break;
+                    case 2:
+                        Environment.Exit(0);
+                        break;
+                    default:
+                        Console.WriteLine("Invalid option. Please try again.");
+                        Console.ReadKey();
+                        break;
+                }
+            }
+        }
+
+        static void Login()
+        {
+            Console.Clear();
+            Console.Write("Enter login: ");
+            string inputLogin = Console.ReadLine();
+            Console.Write("Enter password: ");
+            string inputPassword = ReadPassword();
+
+            if (inputLogin == login && inputPassword == password)
+            {
+                Console.WriteLine("Login successful!");
+                Console.ReadKey();
+                MainMenu();
+            }
+            else
+            {
+                Console.WriteLine("Invalid login or password. Please try again.");
+                Console.ReadKey();
+                Login();
+            }
+        }
+
+        static string ReadPassword()
+        {
+            string password = "";
+            while (true)
+            {
+                ConsoleKeyInfo cki = Console.ReadKey(true);
+                if (cki.Key == ConsoleKey.Enter)
+                {
+                    Console.WriteLine();
+                    break;
+                }
+                else if (cki.Key == ConsoleKey.Backspace)
+                {
+                    if (password.Length > 0)
+                    {
+                        Console.Write("\b \b");
+                        password = password.Substring(0, password.Length - 1);
+                    }
+                }
+                else
+                {
+                    Console.Write("*");
+                    password += cki.KeyChar;
+                }
+            }
+            return password;
+        }
+
+        static void MainMenu()
+        {
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine("Main Menu");
+                Console.WriteLine("---------");
+                Console.WriteLine("1. Change Window Size");
+                Console.WriteLine("2. Change Text Color");
+                Console.WriteLine("3. Change Background Color");
+                Console.WriteLine("4. Logout");
+                Console.Write("Choose an option: ");
+
+                int option = int.Parse(Console.ReadLine());
+
+                switch (option)
+                {
+                    case 1:
+                        ChangeWindowSize();
+                        break;
+                    case 2:
+                        ChangeTextColor();
+                        break;
+                    case 3:
+                        ChangeBackgroundColor();
+                        break;
+                    case 4:
+                        Environment.Exit(0);
+                        break;
+                    default:
+                        Console.WriteLine("Invalid option. Please try again.");
+                        Console.ReadKey();
+                        break;
+                }
+            }
+        }
+
+        static void ChangeWindowSize()
+        {
+            Console.Clear();
+            Console.Write("Enter new width: ");
+            int width = int.Parse(Console.ReadLine());
+            Console.Write("Enter new height: ");
+            int height = int.Parse(Console.ReadLine());
+
+            Console.WindowWidth = width;
+            Console.WindowHeight = height;
+
+            Console.WriteLine("Window size changed successfully!");
+            Console.ReadKey();
+        }
+
+        static void ChangeTextColor()
+        {
+            Console.Clear();
+            Console.WriteLine("Choose a text color:");
+            Console.WriteLine("1. Black");
+            Console.WriteLine("2. Red");
+            Console.WriteLine("3. Green");
+            Console.WriteLine("4. Yellow");
+            Console.WriteLine("5. Blue");
+            Console.WriteLine("6. Magenta");
+            Console.WriteLine("7. Cyan");
+            Console.WriteLine("8. White");
+            Console.Write("Choose an option: ");
+
+            int option = int.Parse(Console.ReadLine());
+
+            switch (option)
+            {
+                case 1:
+                    Console.ForegroundColor = ConsoleColor.Black;
+                    break;
+                case 2:
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    break;
+                case 3:
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    break;
+                case 4:
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    break;
+                case 5:
+                    Console.ForegroundColor = ConsoleColor.Blue;
+                    break;
+                case 6:
+                    Console.ForegroundColor = ConsoleColor.Magenta;
+                    break;
+                case 7:
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    break;
+                case 8:
+                    Console.ForegroundColor = ConsoleColor.White;
+                    break;
+                default:
+                    Console.WriteLine("Invalid option. Please try again.");
+                    Console.ReadKey();
+                    break;
+            }
+
+            Console.WriteLine("Text color changed successfully!");
+            Console.ReadKey();
+        }
+
+        static void ChangeBackgroundColor()
+        {
+            Console.Clear();
+            Console.WriteLine("Choose a background color:");
+            Console.WriteLine("1. Black");
+            Console.WriteLine("2. Red");
+            Console.WriteLine("3. Green");
+            Console.WriteLine("4. Yellow");
+            Console.WriteLine("5. Blue");
+            Console.WriteLine("6. Magenta");
+            Console.WriteLine("7. Cyan");
+            Console.WriteLine("8. White");
+            Console.Write("Choose an option: ");
+
+            int option = int.Parse(Console.ReadLine());
+
+            switch (option)
+            {
+                case 1:
+                    Console.BackgroundColor = ConsoleColor.Black;
+                    break;
+                case 2:
+                    Console.BackgroundColor = ConsoleColor.Red;
+                    break;
+                case 3:
+                    Console.BackgroundColor = ConsoleColor.Green;
+                    break;
+                case 4:
+                    Console.BackgroundColor = ConsoleColor.Yellow;
+                    break;
+                case 5:
+                    Console.BackgroundColor = ConsoleColor.Blue;
+                    break;
+                case 6:
+                    Console.BackgroundColor = ConsoleColor.Magenta;
+                    break;
+                case 7:
+                    Console.BackgroundColor = ConsoleColor.Cyan;
+                    break;
+                case 8:
+                    Console.BackgroundColor = ConsoleColor.White;
+                    break;
+                default:
+                    Console.WriteLine("Invalid option. Please try again.");
+                    Console.ReadKey();
+                    break;
+            }
+
+            Console.WriteLine("Background color changed successfully!");
+            Console.ReadKey();
+        }
+    }
+}
