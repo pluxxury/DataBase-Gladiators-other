@@ -1,0 +1,141 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+
+namespace UsersDB
+{
+    class User
+    {
+        public string Username { get; set; }
+        public string Password { get; set; }
+        public string Email { get; set; }
+
+        public User(string username, string password, string email)
+        {
+            Username = username;
+            Password = password;
+            Email = email;
+        }
+    }
+
+    class UsersDB
+    {
+        private List<User> users;
+        private string dataFile;
+
+        public UsersDB(string dataFile)
+        {
+            this.dataFile = dataFile;
+            users = LoadData();
+        }
+
+        private List<User> LoadData()
+        {
+            if (!File.Exists(dataFile))
+                return new List<User>();
+
+            List<User> users = new List<User>();
+            string[] lines = File.ReadAllLines(dataFile);
+            foreach (string line in lines)
+            {
+                string[] parts = line.Split(',');
+                users.Add(new User(parts[0], parts[1], parts[2]));
+            }
+            return users;
+        }
+
+        public void SaveData()
+        {
+            using (StreamWriter writer = new StreamWriter(dataFile))
+            {
+                foreach (User user in users)
+                {
+                    writer.WriteLine($"{user.Username},{user.Password},{user.Email}");
+                }
+            }
+        }
+
+        public void AddUser(string username, string password, string email)
+        {
+            users.Add(new User(username, password, email));
+            SaveData();
+        }
+
+        public User GetUser(string username)
+        {
+            return users.Find(u => u.Username == username);
+        }
+
+        public void DeleteUser(string username)
+        {
+            users.RemoveAll(u => u.Username == username);
+            SaveData();
+        }
+
+        public void ListUsers()
+        {
+            foreach (User user in users)
+            {
+                Console.WriteLine($"User {user.Username}: {user.Email}");
+            }
+        }
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            UsersDB db = new UsersDB("users.txt");
+
+            while (true)
+            {
+                Console.WriteLine("1. Add user");
+                Console.WriteLine("2. Get user");
+                Console.WriteLine("3. Delete user");
+                Console.WriteLine("4. List users");
+                Console.WriteLine("5. Exit");
+                Console.Write("Choose an option: ");
+                int choice = int.Parse(Console.ReadLine());
+
+                switch (choice)
+                {
+                    case 1:
+                        Console.Write("Enter username: ");
+                        string username = Console.ReadLine();
+                        Console.Write("Enter password: ");
+                        string password = Console.ReadLine();
+                        Console.Write("Enter email: ");
+                        string email = Console.ReadLine();
+                        db.AddUser(username, password, email);
+                        break;
+                    case 2:
+                        Console.Write("Enter username: ");
+                        username = Console.ReadLine();
+                        User user = db.GetUser(username);
+                        if (user != null)
+                        {
+                            Console.WriteLine($"User {username} found: {user.Email}");
+                        }
+                        else
+                        {
+                            Console.WriteLine($"User {username} not found");
+                        }
+                        break;
+                    case 3:
+                        Console.Write("Enter username: ");
+                        username = Console.ReadLine();
+                        db.DeleteUser(username);
+                        break;
+                    case 4:
+                        db.ListUsers();
+                        break;
+                    case 5:
+                        return;
+                    default:
+                        Console.WriteLine("Invalid option");
+                        break;
+                }
+            }
+        }
+    }
+}
