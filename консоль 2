@@ -1,0 +1,192 @@
+using System;
+
+namespace ConsoleManager
+{
+    class Program
+    {
+        static (string, string) credentials = ("админ", "пароль");
+
+        static void Main(string[] args)
+        {
+            Console.Title = "Менеджер Консоли";
+
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine("Менеджер Консоли");
+                Console.WriteLine("------------");
+                Console.WriteLine("1. Вход");
+                Console.WriteLine("2. Выход");
+                Console.Write("Выберите опцию: ");
+
+                if (int.TryParse(Console.ReadLine(), out int option) && option == 1)
+                {
+                    Login();
+                }
+                else if (option == 2)
+                {
+                    Environment.Exit(0);
+                }
+                else
+                {
+                    Console.WriteLine("Неверная опция. Пожалуйста, попробуйте снова.");
+                    Console.ReadKey();
+                }
+            }
+        }
+
+        static void Login()
+        {
+            Console.Clear();
+            Console.Write("Введите логин: ");
+            string inputLogin = Console.ReadLine();
+            Console.Write("Введите пароль: ");
+            string inputPassword = ReadPassword();
+
+            if ((inputLogin, inputPassword) == credentials)
+            {
+                Console.WriteLine("Вход выполнен успешно!");
+                Console.ReadKey();
+                MainMenu();
+            }
+            else
+            {
+                Console.WriteLine("Неверный логин или пароль. Пожалуйста, попробуйте снова.");
+                Console.ReadKey();
+                Login();
+            }
+        }
+
+        static string ReadPassword()
+        {
+            string password = "";
+            while (true)
+            {
+                ConsoleKeyInfo cki = Console.ReadKey(true);
+                if (cki.Key == ConsoleKey.Enter)
+                {
+                    Console.WriteLine();
+                    break;
+                }
+                else if (cki.Key == ConsoleKey.Backspace)
+                {
+                    if (password.Length > 0)
+                    {
+                        Console.Write("\b \b");
+                        password = password.Substring(0, password.Length - 1);
+                    }
+                }
+                else
+                {
+                    Console.Write("*");
+                    password += cki.KeyChar;
+                }
+            }
+            return password;
+        }
+
+        static void MainMenu()
+        {
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine("Главное Меню");
+                Console.WriteLine("---------");
+                Console.WriteLine("1. Изменить Размер Окна");
+                Console.WriteLine("2. Изменить Цвет Текста");
+                Console.WriteLine("3. Изменить Цвет Фона");
+                Console.WriteLine("4. Выйти");
+                Console.Write("Выберите опцию: ");
+
+                if (int.TryParse(Console.ReadLine(), out int option))
+                {
+                    switch (option)
+                    {
+                        case 1:
+                            ChangeWindowSize();
+                            break;
+                        case 2:
+                            ChangeTextColor();
+                            break;
+                        case 3:
+                            ChangeBackgroundColor();
+                            break;
+                        case 4:
+                            Environment.Exit(0);
+                            break;
+                        default:
+                            Console.WriteLine("Неверная опция. Пожалуйста, попробуйте снова.");
+                            Console.ReadKey();
+                            break;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Неверный ввод. Пожалуйста, попробуйте снова.");
+                    Console.ReadKey();
+                }
+            }
+        }
+
+        static void ChangeWindowSize()
+        {
+            Console.Clear();
+            Console.Write("Введите новый ширины: ");
+            int width = int.Parse(Console.ReadLine());
+            Console.Write("Введите новый высоты: ");
+            int height = int.Parse(Console.ReadLine());
+
+            Console.WindowWidth = width;
+            Console.WindowHeight = height;
+
+            Console.WriteLine("Размер окна изменен успешно!");
+            Console.ReadKey();
+        }
+
+        static void ChangeTextColor()
+        {
+            Console.Clear();
+            Console.WriteLine("Выберите цвет текста:");
+            foreach (var (i, color) in Enum.GetValues(typeof(ConsoleColor)).Cast<ConsoleColor>().Select((c, i) => (i + 1, c)))
+            {
+                Console.WriteLine($"{i}. {color}");
+            }
+            Console.Write("Выберите опцию: ");
+
+            if (int.TryParse(Console.ReadLine(), out int option))
+            {
+                Console.ForegroundColor = (ConsoleColor)(option - 1);
+                Console.WriteLine("Цвет текста изменен успешно!");
+                Console.ReadKey();
+            }
+            else
+            {
+                Console.WriteLine("Неверная опция. Пожалуйста, попробуйте снова.");
+                Console.ReadKey();
+            }
+        }
+
+        static void ChangeBackgroundColor()
+        {
+            Console.Clear();
+            Console.WriteLine("Выберите цвет фона:");
+            foreach (var (i, color) in Enum.GetValues(typeof(ConsoleColor)).Cast<ConsoleColor>().Select((c, i) => (i + 1, c)))
+            {
+                Console.WriteLine($"{i}. {color}");
+            }
+            Console.Write("Выберите опцию: ");
+
+            if (int.TryParse(Console.ReadLine(), out int option))
+            {
+                Console.BackgroundColor = (ConsoleColor)(option - 1);
+                Console.WriteLine("Цвет фона изменен успешно!");
+                Console.ReadKey();
+            }
+            else
+            {
+                Console.WriteLine("Неверная опция. Пожалуйста, попробуйте снова.");
+                Console.ReadKey();
+            }
+        }
+    }
+}
