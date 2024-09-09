@@ -1,0 +1,147 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Mail;
+using System.Runtime.Remoting.Channels;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ConsoleApp12
+{
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+            Managment managment = new Managment();
+
+            managment.Start();
+        }
+    }
+
+    class Student
+    {
+        public Student(string name, string group, int age)
+        {
+            Name = name;
+
+            Group = group;
+            Age = age;
+
+        }
+        public string Name { get; private set; }
+
+        public string Surname { get; private set; }
+
+        public string Group { get; private set; }
+
+        public int Age { get; private set; }
+    }
+
+    class Managment
+    {
+
+        private List<Student> students = new List<Student>();
+
+        public void Start()
+        {
+            bool isOpen = true;
+
+            const string CommandAddStudent = "1";
+            const string CommandDeleteStudent = "2";
+            const string CommandShowStudents = "3";
+            const string CommandExit = "4";
+
+            while (isOpen)
+            {
+                Console.WriteLine("Выберите действие");
+                Console.WriteLine($"{CommandAddStudent}. Добавить студента");
+                Console.WriteLine($"{CommandDeleteStudent}. Удалить студента");
+                Console.WriteLine($"{CommandShowStudents}. Показать всех студентов");
+                Console.WriteLine($"{CommandExit}. Выйти");
+
+                string choice = Console.ReadLine();
+
+                switch (choice)
+                {
+                    case CommandAddStudent:
+                        AddStudent();
+                        break;
+                    case CommandDeleteStudent:
+                        Console.WriteLine("Введите Имя студента, чтобы удалить");
+                        string studentRemove = Console.ReadLine();
+
+                        RemoveStudent(studentRemove);
+                        Console.WriteLine();
+                        break;
+
+                    case CommandShowStudents:
+                        ShowStudents();
+                        Console.WriteLine();
+                        break;
+
+                    case CommandExit:
+                        isOpen = false;
+                        break;
+
+                    default:
+                        Console.WriteLine("Неправильный выбор.");
+                        Console.WriteLine();
+                        break;
+                }
+            }
+        }
+
+        private void AddStudent()
+        {
+            string name;
+            string group;
+            int age;
+            Console.WriteLine("Введите ФИО");
+            name = Console.ReadLine();
+
+            Console.WriteLine("Введите группу");
+            group = Console.ReadLine();
+
+            Console.WriteLine("Введите возраст");
+            age = int.Parse(Console.ReadLine());
+
+            Console.WriteLine();
+            Student studentAdd = new Student(name, group, age); //
+            students.Add(studentAdd);
+        }
+
+        public void RemoveStudent(string name)
+        {
+            Console.WriteLine("Введите имя студента, которого хотите удалить");
+
+            Student studentRemove = students.Find(m => m.Name == name);
+            if (studentRemove != null)
+            {
+                students.Remove(studentRemove); //remove add для удаления. доработать add student 
+                Console.WriteLine($"{name} был удалён из группы");
+            }
+            else
+            {
+                Console.WriteLine("Такой студент не найден");
+            }
+        }
+
+        public void ShowStudents()
+        {
+            if (students.Count == 0)
+            {
+                Console.WriteLine("В группе пока никого нет");
+            }
+            else
+            {
+                Console.WriteLine("Список Студентов");
+                foreach (var student in students)
+                {
+                    Console.WriteLine(student);
+                }
+            }
+        }
+
+        
+    }
+}
