@@ -1,0 +1,552 @@
+using System;
+using System.Collections.Generic;
+
+namespace DOTA_2
+{
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+            Arena arena = new Arena();
+
+            arena.Work();
+        }
+    }
+
+    abstract class Fighter
+    {
+        private static int s_counter = 0;
+
+        public Fighter(string name, int health, int damage)
+        {
+            Name = name;
+            MaxHealth = health;
+            CurrentHealth = MaxHealth;
+            DefaultDamage = damage;
+            Id = ++s_counter;
+        }
+
+        public string Name { get; protected set; }
+        public int MaxHealth { get; protected set; }
+        public int CurrentHealth { get; protected set; }
+        public int DefaultDamage { get; protected set; }
+        public int AbilityDamage { get; protected set; }
+
+        public bool IsAlive => MaxHealth > 0;
+
+        public int Id { get; protected set; }
+
+        public abstract void ShowInfo();
+
+        public abstract void Atack(Fighter fighter);
+
+        public virtual void TakeDamage(int damage)
+        {
+            if (IsAlive)
+                CurrentHealth -= damage;
+        }
+
+
+        public void ShowStats()
+        {
+            Console.WriteLine($"{Name}, здоровье - {MaxHealth}, урон {DefaultDamage}, Id-{Id}");
+        }
+
+        public abstract bool TryUseAbility();
+
+        public void ShowCurrentHealth()
+        {
+            Console.WriteLine($"{Name}, осталось {CurrentHealth} здоровья.");
+        }
+    }
+    class Mike : Fighter
+    {
+        private int _doublefirst;
+
+        public Mike() : base("Майк Тайсон", 180, 30)
+        {
+            _doublefirst = 50;
+        }
+        public override void Atack(Fighter fighter)
+        {
+            if (TryUseAbility())
+            {
+                for(int i = 0;i<2;i++)
+                    fighter.TakeDamage(DefaultDamage + _doublefirst);
+            }
+            else
+            {
+                fighter.TakeDamage(DefaultDamage);
+                ShowStats();
+            }
+        }
+        public override void ShowInfo()
+        {
+            Console.WriteLine("Уже в 13 лет Майк мог поднять 100-килограммовую штангу в жиме лёжа и уже тогда подавал признаки незаурядного боксёрского таланта и он хотел себя попробовать в боксе" + "годы тренировах на практике научили его техники двойной аперкот и это стало его короным приемом" +
+                "Годы шли и его стали бояться все на ринге и поэтому он отправилься на арену поведать сильных и безумных противников" + $"способно-наносит двойной урон с вероятностью{_doublefirst}");
+        }
+        public override bool TryUseAbility()
+        {
+            int minRandomValue = 0;
+            int maxRandomValue = 2;
+            int multipler = 2;
+
+            if (UserUtils.GenerateRandomNumber(minRandomValue, maxRandomValue) == 0)
+            {
+                AbilityDamage = DefaultDamage * multipler;
+                UserUtils.SetTextColor(ConsoleColor.Cyan);
+                Console.WriteLine($"{Name} применяет свою способность" + $" нанося двойной удар {AbilityDamage}");
+                UserUtils.SetTextColor(ConsoleColor.Magenta);
+                return true;
+            }
+            return false;
+        }
+    }
+    class Wizard : Fighter
+    {
+        private int _maxMana;
+        private int _currentMana;
+        private int _fireBallDamage;
+        private int _fireBallManaCost;
+
+        public Wizard() : base("Старый бог", 100, 20)
+        {
+            int minManaCostRandomValue = 40;
+            int maxManaCostRandomValue = 80;
+            int minDamageRandomValue = 10;
+            int maxDamageRandomValue = 20;
+
+            _maxMana = 100;
+            _currentMana = _maxMana;
+            _fireBallManaCost = UserUtils.GenerateRandomNumber(minManaCostRandomValue, maxManaCostRandomValue);
+            _fireBallDamage = UserUtils.GenerateRandomNumber(minDamageRandomValue, maxDamageRandomValue);
+        }
+        public override void Atack(Fighter fighter)
+        {
+            
+            if (TryUseAbility())
+            {
+                fighter.TakeDamage(AbilityDamage);
+            }
+            else
+            {
+                fighter.TakeDamage(DefaultDamage);
+                ShowStats();
+            }
+
+            if (_currentMana < _fireBallManaCost)
+            {
+                Console.WriteLine($"{Name} пытался использовать огненный шар, но недостаточно маны для запуска способности.\n");
+            }
+            else
+            {
+                Console.WriteLine($"{Name} атакует {fighter.Name} с использованием своей магии!");
+            }
+        }
+        public override void ShowInfo()
+        {
+            Console.WriteLine("Старый бог, волшебник - в общем, обладатель магической силами чародей, " +
+                "неизвестно откуда и как получивший ее,он из-за своего чсв попробовать себя в гладиаторских боях" +
+                "где все остальные бойцы не обладают похожими способностями. Однако магические чары " +
+                "заметно добавляют весомости этому бойцу, что сыграет свою роль в его победе (или поражении).\n" +
+                "Способность: пока хватает маны, Чародей выпускает в противника огненный шар,(так же он может стрелять из глаз лазерами, пускать молнии и замедлять время но он этого отрицает) наносящий " +
+                $"{_fireBallDamage} урона в дополнение к основному. Стоит {_fireBallManaCost} маны.");
+        }
+        public override bool TryUseAbility()
+        {
+            if (_currentMana >= _fireBallManaCost)
+            {
+                _currentMana -= _fireBallManaCost;
+                AbilityDamage = DefaultDamage + _fireBallDamage;
+
+                UserUtils.SetTextColor(ConsoleColor.Green);
+                Console.WriteLine($"{Name} концентрируется и выпускает во врага огненный шар, " +
+                    $"который наносит ему {AbilityDamage} урона!\n");
+                UserUtils.SetTextColor(ConsoleColor.White);
+
+                return true;
+            }
+
+            return false;
+        }
+    }
+    class Thief : Fighter
+    {
+        private int _dodgeProbability;
+
+        public Thief() : base("Стрей", 150, 25)
+        {
+            _dodgeProbability = 33;
+        }
+        public override void Atack(Fighter fighter)
+        {
+            if (TryUseAbility())
+            {
+                UserUtils.SetTextColor(ConsoleColor.Green);
+                Console.WriteLine($"{Name} уклоняется от атаки противника и не атакует в ответ!\n");
+                UserUtils.SetTextColor(ConsoleColor.White);
+            }
+            else
+            {
+                fighter.TakeDamage(DefaultDamage);
+            }
+
+            ShowStats();
+        }
+
+        public override void ShowInfo()
+        {
+            Console.WriteLine("Стрей - это самые распространенные кличка у этого бойца." +
+                "Он не соответствовал своему названию давя на жалость,он гибким и быстрым от рождения что помогло ему не снискать славу" +
+                "Он заманивал людей своими бубновыми усами,а затем заберал деньги " +
+                "Все эти качества, считает Стрей, помогут ему с легкостью одолеть любого противника.\n" +
+                $"Способность: с вероятностью {_dodgeProbability}% Стрей может уклониться от удара оппонента, " +
+                "не получив урона.");
+        }
+        public override void TakeDamage(int damage)
+        {
+            if (TryUseAbility())
+            {
+                UserUtils.SetTextColor(ConsoleColor.Green);
+                Console.WriteLine($"{Name} мастерски и молниеносно уклоняется от атаки противника " +
+                    $"и не получает урона!\n");
+                UserUtils.SetTextColor(ConsoleColor.White);
+            }
+            else
+            {
+                CurrentHealth -= damage;
+            }
+        }
+        public override bool TryUseAbility()
+        {
+            int minRandomValue = 0;
+            int maxRandomValue = 3;
+
+            if (UserUtils.GenerateRandomNumber(minRandomValue, maxRandomValue) == 0)
+            {
+                AbilityDamage = DefaultDamage;
+
+                return true;
+            }
+
+            return false;
+        }
+    }
+    class Berserk : Fighter
+    {
+        private int _healAmount;
+        private int _maxAnger;
+        private int _currentAnger;
+        private int _angerStep;
+
+        public Berserk() : base("Папич", 150, 40)
+        {
+            int minRandomValue = 30;
+            int maxRandomValue = 50;
+
+            _healAmount = UserUtils.GenerateRandomNumber(minRandomValue, maxRandomValue);
+            _maxAnger = 60;
+            _currentAnger = 0;
+            _angerStep = 20;
+        }
+
+        public override void Atack(Fighter fighter)
+        {
+            bool abilityUsed = TryUseAbility();
+
+            int damage = DefaultDamage + (_currentAnger / 10); 
+
+            fighter.TakeDamage(damage);
+
+            ShowStats();
+
+            if (abilityUsed)
+            {
+                Console.WriteLine($"{Name} использовал свою способность и нанес дополнительный урон!");
+            }
+        }
+        public override void ShowInfo()
+        {
+            Console.WriteLine("Папич всегда отличался от других излишне буйным нравом. " +
+                "Еще в далеком детстве он познакомился с дядей Богданом который его научил драться. " +
+                "Никто не задирал Психопатыча, как никто больше и не общался с ним, боясь его " +
+                "вспыльчивого характера. Это свойство личности очевидно может помочь ему в Гладиаторских боях.\n" +
+                $"Способность: получая урон, Папитч накапливает {_angerStep} очки nuts. При достижении " +
+                $"{_maxAnger} он восстанавливает {_healAmount} здоровья. Лимитов у способности нет.");
+        }
+        public override bool TryUseAbility()
+        {
+            _currentAnger += _angerStep;
+            int difference = MaxHealth - CurrentHealth;
+
+            if (_currentAnger >= _maxAnger)
+            {
+                if (difference > _healAmount)
+                {
+                    CurrentHealth += _healAmount;
+
+                    UserUtils.SetTextColor(ConsoleColor.Green);
+                    Console.WriteLine($"{Name} накопил достаточно nuts, поэтому он применяет свою способность " +
+                        $"и восстанавливает {_healAmount} здоровья.\n");
+                    UserUtils.SetTextColor(ConsoleColor.White);
+                }
+                else
+                {
+                    CurrentHealth += difference;
+
+                    UserUtils.SetTextColor(ConsoleColor.Green);
+                    Console.WriteLine($"\n{Name} накопил достаточно nuts, поэтому он применяет свою способность " +
+                        $"и восстанавливает {difference} здоровья.\n");
+                    UserUtils.SetTextColor(ConsoleColor.White);
+                }
+
+                AbilityDamage = DefaultDamage;
+                _currentAnger = 0;
+
+                return true;
+            }
+            return false;
+        }
+    }
+    class Сonfused : Fighter
+    {
+        private int _block;
+
+        public Сonfused() : base("Головач", 200, 15)
+        {
+            _block = 50;
+        }
+        public override void Atack(Fighter fighter)
+        {
+            if (TryUseAbility())
+            {
+                UserUtils.SetTextColor(ConsoleColor.Green);
+                Console.WriteLine($"{Name} мастерски блокирует атаки противника и поглощает урон в 2 раза!\n");
+                UserUtils.SetTextColor(ConsoleColor.White);
+                fighter.TakeDamage(DefaultDamage / 2);
+            }
+            else
+            {
+                UserUtils.SetTextColor(ConsoleColor.Red);
+                Console.WriteLine($"{Name} атакует {fighter.Name} и наносит {DefaultDamage} урона!\n");
+                UserUtils.SetTextColor(ConsoleColor.White);
+                fighter.TakeDamage(DefaultDamage);
+            }
+        }
+        public override void ShowInfo()
+        {
+            Console.WriteLine("Ему помогали постоянно добится успеха потому что в 1 рыло у него не получалось " + "Пельменный мастер покрывается жиром что помогает ему" +
+                $"способноть: с вероятность{_block} % поглощает дамаг в 2 раза");
+        }
+        public override void TakeDamage(int damage)
+        {
+            if (TryUseAbility())
+            {
+
+                UserUtils.SetTextColor(ConsoleColor.Green);
+                Console.WriteLine($"{Name} мастерски блокирует атаки противника " +
+                    $"поглощает дамаг!\n");
+                UserUtils.SetTextColor(ConsoleColor.White);
+            }
+            else
+                CurrentHealth -= damage;
+        }
+        public override bool TryUseAbility()
+        {
+            int minRandomValue = 0;
+            int maxRandomValue = 2;
+            if (UserUtils.GenerateRandomNumber(minRandomValue, maxRandomValue) == 0)
+            {
+
+                AbilityDamage = DefaultDamage;
+
+                return true;
+            }
+            return false;
+        }
+    }
+    class Arena
+    {
+        private List<Fighter> _fighters = new List<Fighter>();
+
+        public Arena()
+        {
+            _fighters.Add(new Mike());
+            _fighters.Add(new Berserk());
+            _fighters.Add(new Wizard());
+            _fighters.Add(new Thief());
+            _fighters.Add(new Сonfused());
+        }
+
+        public void Work()
+        {
+            Fighter firstFighter = null;
+            Fighter secondFighter = null;
+
+            Console.WriteLine("Добро пожаловать на Гладиаторские бои! Только здесь вы можете " +
+                "увидеть, как два бойца в захватывающем поединке будут сражатся друг с другом. " +
+                "Разные герои с абсолютно разными историями встретятся лицом к лицу на поле брани, " +
+                "а победивший воин получит свою награду - наполненный до края мешок золота и особый приз.\n");
+
+            UserUtils.SetTextColor(ConsoleColor.Green);
+            ShowAllFighters();
+            UserUtils.SetTextColor(ConsoleColor.White);
+
+            Console.Write("\nДля начала боя вам нужно выбрать двух героев.\n");
+
+            PickFighters(ref firstFighter, ref secondFighter);
+
+            UserUtils.SetTextColor(ConsoleColor.Red);
+            Console.WriteLine("\nГладиаторы выбраны, можно начинать бой!");
+            UserUtils.SetTextColor(ConsoleColor.White);
+
+            Console.WriteLine("\nДля начала боя нажмите любую клавишу...");
+            Console.ReadKey();
+            Console.Clear();
+
+            Fight(firstFighter, secondFighter);
+
+            Summarize(firstFighter, secondFighter);
+
+            Console.ReadKey();
+        }
+
+        private void PickFighters(ref Fighter firstFighter, ref Fighter secondFighter)
+        {
+            Console.Write("\nДля выбора первого бойца введите его ID: ");
+            PickFighter(out firstFighter);
+            firstFighter.ShowInfo();
+            _fighters.Remove(firstFighter);
+
+            Console.Write("\nДля выбора второго персонажа введите его ID: ");
+            PickFighter(out secondFighter);
+            secondFighter.ShowInfo();
+            _fighters.Remove(secondFighter);
+        }
+
+        private void Fight(Fighter firstFighter, Fighter secondFighter)
+        {
+            while (firstFighter.CurrentHealth > 0 && secondFighter.CurrentHealth > 0)
+            {
+                Attack(firstFighter, secondFighter);
+                Attack(secondFighter, firstFighter);
+
+                Console.WriteLine();
+
+                firstFighter.ShowCurrentHealth();
+                secondFighter.ShowCurrentHealth();
+
+                Console.WriteLine();
+                Console.ReadKey();
+            }
+        }
+
+        private void Summarize(Fighter firstFighter, Fighter secondFighter)
+        {
+            UserUtils.SetTextColor(ConsoleColor.Green);
+
+            if (firstFighter.CurrentHealth <= 0 && secondFighter.CurrentHealth <= 0)
+                Console.WriteLine("Ничья! Никто не получает золото.");
+            else if (firstFighter.CurrentHealth <= 0)
+                Console.WriteLine($"{secondFighter.Name} выигрывает бой и " +
+                    $"получает в награду огромный мешок золота!");
+            else if (secondFighter.CurrentHealth <= 0)
+                Console.WriteLine($"{firstFighter.Name} выигрывает бой и " +
+                    $"получает в награду огромный мешок золота!");
+        }
+
+        private void Attack(Fighter firstFighter, Fighter secondFighter)
+        {
+            if (firstFighter.TryUseAbility())
+            {
+                secondFighter.TakeDamage(firstFighter.AbilityDamage);
+            }
+            else
+            {
+                secondFighter.TakeDamage(firstFighter.DefaultDamage);
+
+                Console.WriteLine($"{firstFighter.Name} бьет оппонента " +
+                    $"и наносит ему {firstFighter.DefaultDamage} урона.");
+            }
+        }
+
+        private void ShowAllFighters()
+        {
+            Console.WriteLine("Все бойцы-гладиаторы:");
+
+            for (int i = 0; i < _fighters.Count; i++)
+            {
+                int index = i + 1;
+
+                Console.Write($"{index}. ");
+                _fighters[i].ShowStats();
+            }
+        }
+
+        private int ReadNumber()
+        {
+            int number;
+
+            while (int.TryParse(Console.ReadLine(), out number) == false)
+            {
+                UserUtils.SetTextColor(ConsoleColor.Red);
+                Console.WriteLine("Ошибка: введено не число. Попробуйте еще раз.");
+                UserUtils.SetTextColor(ConsoleColor.White);
+            }
+
+            return number;
+        }
+
+        private bool TryGetFighter(out Fighter fighter, int id)
+        {
+            for (int i = 0; i < _fighters.Count; i++)
+            {
+                if (_fighters[i].Id == id)
+                {
+                    fighter = _fighters[i];
+                    return true;
+                }
+            }
+
+            fighter = null;
+            return false;
+        }
+
+        private void PickFighter(out Fighter fighter)
+        {
+            fighter = null;
+
+            while (fighter == null)
+            {
+                int fighterId = ReadNumber();
+
+                if (TryGetFighter(out fighter, fighterId))
+                {
+                    UserUtils.SetTextColor(ConsoleColor.Green);
+                    Console.WriteLine($"\nБоец выбран и это - {fighter.Name}.\n");
+                    UserUtils.SetTextColor(ConsoleColor.White);
+                }
+                else
+                {
+                    UserUtils.SetTextColor(ConsoleColor.Red);
+                    Console.WriteLine("Гладиатора с этим ID не найдено!");
+                    UserUtils.SetTextColor(ConsoleColor.White);
+                }
+            }
+        }
+    }
+    class UserUtils
+    {
+        private static Random s_random = new Random();
+
+        public static int GenerateRandomNumber(int minRandomValue, int maxRandomValue)
+        {
+            return s_random.Next(minRandomValue, maxRandomValue);
+        }
+
+        public static void SetTextColor(ConsoleColor color)
+        {
+            Console.ForegroundColor = color;
+        }
+    }
+}
