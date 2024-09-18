@@ -68,10 +68,7 @@ namespace ConsoleApp12
                         SaveStudents();
                         break;
                     case CommandDeleteStudent:
-                        Console.WriteLine("Введите имя студента, которого хотите удалить");
-                        string studentRemove = Console.ReadLine();
-
-                        RemoveStudent(studentRemove);
+                        DeleteStudentByIndex();
                         SaveStudents();
                         Console.WriteLine();
                         break;
@@ -117,19 +114,31 @@ namespace ConsoleApp12
             students.Add(studentAdd);
         }
 
-        public void RemoveStudent(string name)
+        private void DeleteStudentByIndex()
         {
-            Student studentRemove = students.Find(m => m.Name == name);
+            if (students.Count == 0)
+            {
+                Console.WriteLine("В группе пока никого нет");
+                return;
+            }
 
-            if (studentRemove != null)
+            Console.WriteLine("Список Студентов:");
+            for (int i = 0; i < students.Count; i++)
             {
-                students.Remove(studentRemove);
-                Console.WriteLine($"{name} был удалён из группы");
+                Console.WriteLine($"{i + 1}. {students[i]}");
             }
-            else
+
+            int index;
+            Console.Write("Введите номер студента, которого хотите удалить: ");
+            while (!int.TryParse(Console.ReadLine(), out index) || index < 1 || index > students.Count)
             {
-                Console.WriteLine("Такой студент не найден");
+                Console.Write("Неправильный номер. Введите номер от 1 до " + students.Count + ": ");
             }
+
+            Student studentRemove = students[index - 1];
+            students.RemoveAt(index - 1);
+
+            Console.WriteLine($"Студент {studentRemove.Name} был удалён из группы");
         }
 
         public void ShowStudents()
@@ -140,10 +149,10 @@ namespace ConsoleApp12
             }
             else
             {
-                Console.WriteLine("Список Студентов");
-                foreach (var student in students)
+                Console.WriteLine("Список Студентов:");
+                for (int i = 0; i < students.Count; i++)
                 {
-                    Console.WriteLine(student);
+                    Console.WriteLine($"{i + 1}. {students[i]}");
                 }
             }
         }
