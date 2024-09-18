@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace DOTA_2
+namespace arenaa
 {
     internal class Program
     {
@@ -59,11 +59,11 @@ namespace DOTA_2
             Console.WriteLine($"{Name}, осталось {CurrentHealth} здоровья.");
         }
     }
-    class Mike : Fighter
+    class MadMom : Fighter
     {
         private int _doublefirst;
 
-        public Mike() : base("Майк Тайсон", 180, 30)
+        public Mike() : base("Безумная Мать", 180, 30)
         {
             _doublefirst = 50;
         }
@@ -82,8 +82,7 @@ namespace DOTA_2
         }
         public override void ShowInfo()
         {
-            Console.WriteLine("Уже в 13 лет Майк мог поднять 100-килограммовую штангу в жиме лёжа и уже тогда подавал признаки незаурядного боксёрского таланта и он хотел себя попробовать в боксе" + "годы тренировах на практике научили его техники двойной аперкот и это стало его короным приемом" +
-                "Годы шли и его стали бояться все на ринге и поэтому он отправилься на арену поведать сильных и безумных противников" + $"способно-наносит двойной урон с вероятностью{_doublefirst}");
+            Console.WriteLine("Уже долгие годы она изгоняет цыганских детей с детских площадок..." + "в ярости она может ударить коляской -" + $"способно-наносит двойной урон с вероятностью{_doublefirst}");
         }
         public override bool TryUseAbility()
         {
@@ -102,14 +101,14 @@ namespace DOTA_2
             return false;
         }
     }
-    class Wizard : Fighter
+    class Boulevard Depo : Fighter
     {
         private int _maxMana;
         private int _currentMana;
         private int _fireBallDamage;
         private int _fireBallManaCost;
 
-        public Wizard() : base("Старый бог", 100, 20)
+        public Wizard() : "Кащенко ", 100, 20)
         {
             int minManaCostRandomValue = 40;
             int maxManaCostRandomValue = 80;
@@ -136,11 +135,11 @@ namespace DOTA_2
 
             if (_currentMana < _fireBallManaCost)
             {
-                Console.WriteLine($"{Name} пытался использовать огненный шар, но недостаточно маны для запуска способности.\n");
+                Console.WriteLine($"{Name} пытался усыновить реп игру, но не хватило маны для запуска способности.\n");
             }
             else
             {
-                Console.WriteLine($"{Name} атакует {fighter.Name} с использованием своей магии!");
+                Console.WriteLine($"{Name} атакует {fighter.Name} новым альбомом!");
             }
         }
         public override void ShowInfo()
