@@ -1,10 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Net.Mail;
-using System.Runtime.Remoting.Channels;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ConsoleApp12
 {
@@ -23,27 +20,30 @@ namespace ConsoleApp12
         public Student(string name, string group, int age)
         {
             Name = name;
-
             Group = group;
             Age = age;
-
         }
+
         public string Name { get; private set; }
-
         public string Surname { get; private set; }
-
         public string Group { get; private set; }
-
         public int Age { get; private set; }
+
+        public override string ToString()
+        {
+            return $"Имя: {Name}, Группа: {Group}, Возраст: {Age}";
+        }
     }
 
     class Managment
     {
-
         private List<Student> students = new List<Student>();
+        private const string FileName = "students.txt";
 
         public void Start()
         {
+            LoadStudents();
+
             bool isOpen = true;
 
             const string CommandAddStudent = "1";
@@ -65,12 +65,14 @@ namespace ConsoleApp12
                 {
                     case CommandAddStudent:
                         AddStudent();
+                        SaveStudents();
                         break;
                     case CommandDeleteStudent:
-                        Console.WriteLine("Введите Имя студента, чтобы удалить");
+                        Console.WriteLine("Введите имя студента, которого хотите удалить");
                         string studentRemove = Console.ReadLine();
 
                         RemoveStudent(studentRemove);
+                        SaveStudents();
                         Console.WriteLine();
                         break;
 
@@ -96,6 +98,7 @@ namespace ConsoleApp12
             string name;
             string group;
             int age;
+
             Console.WriteLine("Введите ФИО");
             name = Console.ReadLine();
 
@@ -103,21 +106,24 @@ namespace ConsoleApp12
             group = Console.ReadLine();
 
             Console.WriteLine("Введите возраст");
-            age = int.Parse(Console.ReadLine());
+            while (!int.TryParse(Console.ReadLine(), out age))
+            {
+                Console.WriteLine("Ошибка: введено не число. Попробуйте еще раз.");
+            }
 
             Console.WriteLine();
-            Student studentAdd = new Student(name, group, age); //
+
+            Student studentAdd = new Student(name, group, age);
             students.Add(studentAdd);
         }
 
         public void RemoveStudent(string name)
         {
-            Console.WriteLine("Введите имя студента, которого хотите удалить");
-
             Student studentRemove = students.Find(m => m.Name == name);
+
             if (studentRemove != null)
             {
-                students.Remove(studentRemove); //remove add для удаления. доработать add student 
+                students.Remove(studentRemove);
                 Console.WriteLine($"{name} был удалён из группы");
             }
             else
@@ -142,155 +148,55 @@ namespace ConsoleApp12
             }
         }
 
-        
-    }
-}
-\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Mail;
-using System.Runtime.Remoting.Channels;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ConsoleApp12
-{
-    internal class Program
-    {
-        static void Main(string[] args)
+        private void LoadStudents()
         {
-            Managment managment = new Managment();
-
-            managment.Start();
-        }
-    }
-
-    class Student
-    {
-        public Student(string name, string group, int age)
-        {
-            Name = name;
-
-            Group = group;
-            Age = age;
-
-        }
-        public string Name { get; private set; }
-
-        public string Surname { get; private set; }
-
-        public string Group { get; private set; }
-
-        public int Age { get; private set; }
-    }
-
-    class Managment
-    {
-
-        private List<Student> students = new List<Student>();
-
-        public void Start()
-        {
-            bool isOpen = true;
-
-            const string CommandAddStudent = "1";
-            const string CommandDeleteStudent = "2";
-            const string CommandShowStudents = "3";
-            const string CommandExit = "4";
-
-            while (isOpen)
+            if (File.Exists(FileName))
             {
-                Console.WriteLine("Выберите действие");
-                Console.WriteLine($"{CommandAddStudent}. Добавить студента");
-                Console.WriteLine($"{CommandDeleteStudent}. Удалить студента");
-                Console.WriteLine($"{CommandShowStudents}. Показать всех студентов");
-                Console.WriteLine($"{CommandExit}. Выйти");
-
-                string choice = Console.ReadLine();
-
-                switch (choice)
+                try
                 {
-                    case CommandAddStudent:
-                        AddStudent();
-                        break;
-                    case CommandDeleteStudent:
-                        Console.WriteLine("Введите Имя студента, чтобы удалить");
-                        string studentRemove = Console.ReadLine();
+                    string[] lines = File.ReadAllLines(FileName);
 
-                        RemoveStudent(studentRemove);
-                        Console.WriteLine();
-                        break;
-
-                    case CommandShowStudents:
-                        ShowStudents();
-                        Console.WriteLine();
-                        break;
-
-                    case CommandExit:
-                        isOpen = false;
-                        break;
-
-                    default:
-                        Console.WriteLine("Неправильный выбор.");
-                        Console.WriteLine();
-                        break;
+                    foreach (string line in lines)
+                    {
+                        string[] parts = line.Split(',');
+                        if (parts.Length == 3)
+                        {
+                            string name = parts[0].Trim();
+                            string group = parts[1].Trim();
+                            if (int.TryParse(parts[2].Trim(), out int age))
+                            {
+                                students.Add(new Student(name, group, age));
+                            }
+                            else
+                            {
+                                Console.WriteLine($"Ошибка при чтении файла: неверный формат строки '{line}'");
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Ошибка при чтении файла: неверный формат строки '{line}'");
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Ошибка при чтении файла: {ex.Message}");
                 }
             }
         }
 
-        private void AddStudent()
+        private void SaveStudents()
         {
-            string name;
-            string group;
-            int age;
-            Console.WriteLine("Введите ФИО");
-            name = Console.ReadLine();
-
-            Console.WriteLine("Введите группу");
-            group = Console.ReadLine();
-
-            Console.WriteLine("Введите возраст");
-            age = int.Parse(Console.ReadLine());
-
-            Console.WriteLine();
-            Student studentAdd = new Student(name, group, age); //
-            students.Add(studentAdd);
-        }
-
-        public void RemoveStudent(string name)
-        {
-            Console.WriteLine("Введите имя студента, которого хотите удалить");
-
-            Student studentRemove = students.Find(m => m.Name == name);
-            if (studentRemove != null)
+            try
             {
-                students.Remove(studentRemove); //remove add для удаления. доработать add student 
-                Console.WriteLine($"{name} был удалён из группы");
+                string[] lines = students.Select(s => $"{s.Name},{s.Group},{s.Age}").ToArray();
+
+                File.WriteAllLines(FileName, lines);
             }
-            else
+            catch (Exception ex)
             {
-                Console.WriteLine("Такой студент не найден");
+                Console.WriteLine($"Ошибка при сохранении файла: {ex.Message}");
             }
         }
-
-        public void ShowStudents()
-        {
-            if (students.Count == 0)
-            {
-                Console.WriteLine("В группе пока никого нет");
-            }
-            else
-            {
-                Console.WriteLine("Список Студентов");
-                foreach (var student in students)
-                {
-                    Console.WriteLine(student);
-                }
-            }
-        }
-
-        
     }
 }
