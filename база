@@ -139,3 +139,218 @@ namespace UsersDB
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
+
+namespace StudentDatabase
+{
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+            StudentDatabase studentDb = new StudentDatabase();
+            studentDb.Start();
+        }
+    }
+
+    [Serializable]
+    public abstract class learner
+    {
+        public string Name { get; set; }
+        public int Id { get; set; }
+        public bool IsActive { get; set; }
+
+        protected learner(string name, int id, bool isActive)
+        {
+            Name = name;
+            Id = id;
+            IsActive = isActive;
+        }
+
+        public void Activate()
+        {
+            IsActive = true;
+        }
+
+        public void Deactivate()
+        {
+            IsActive = false;
+        }
+    }
+    [Serializable]
+    public class Student : learner
+    {
+        public Student(string name, int id, bool isActive)
+            : base(name, id, isActive) { }
+    }
+    public class StudentDatabase
+    {
+        private List<Student> students = new List<Student>();
+
+        public void LoadData()
+        {
+            if (File.Exists("students.dat"))
+            {
+                try
+                {
+                    using (FileStream fs = new FileStream("students.dat", FileMode.Open, FileAccess.Read))
+                    {
+                        BinaryFormatter formatter = new BinaryFormatter();
+                        students = (List<Student>)formatter.Deserialize(fs);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Ошибка загрузки данных: {ex.Message}");
+                }
+            }
+        }
+        public void SaveData()
+        {
+            if (students.Any())
+            {
+                try
+                {
+                    using (FileStream fs = new FileStream("students.dat", FileMode.Create, FileAccess.Write))
+                    {
+                        BinaryFormatter formatter = new BinaryFormatter();
+                        formatter.Serialize(fs, students);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Ошибка сохранения данных: {ex.Message}");
+                }
+            }
+        }
+        public void AddStudent(Student student)
+        {
+            students.Add(student);
+        }
+        public void ActivateStudent(int studentId)
+        {
+            Student student = students.Find(s => s.Id == studentId);
+            if (student != null)
+            {
+                student.Activate();
+                Console.WriteLine("Студент активирован.");
+            }
+            else
+            {
+                Console.WriteLine("Студент с таким Id не найден.");
+            }
+        }
+        public void DeactivateStudent(int studentId)
+        {
+            Student student = students.Find(s => s.Id == studentId);
+            if (student != null)
+            {
+                student.Deactivate();
+                Console.WriteLine("Студент деактивирован.");
+            }
+        }
+        public void DisplayStudents()
+        {
+            foreach (Student student in students)
+            {
+                Console.WriteLine($"Имя: {student.Name}, Id: {student.Id}, Статус активности: {student.IsActive}");
+            }
+        }
+        public void Start()
+        {
+            LoadData();
+
+            while (true)
+            {
+                Console.WriteLine("Выберите задачу:\n1. Добавить нового студента\n2. Активировать студента\n3. Деактивировать студента\n4. Вывести список всех студентов\n5. Выход");
+                string choice = Console.ReadLine();
+
+                switch (choice)
+                {
+                    case "1":
+                        Console.WriteLine("Введите имя студента:");
+                        string name = Console.ReadLine();
+
+                        Console.WriteLine("Введите Id студента:");
+                        int id = Int32.Parse(Console.ReadLine());
+
+                        Console.WriteLine("Введите логический статус студента (true/false):");
+                        bool isActive = Boolean.Parse(Console.ReadLine());
+
+                        Student newStudent = new Student(name, id, isActive);
+                        AddStudent(newStudent);
+
+                        Console.WriteLine("Студент добавлен!");
+                        break;
+
+                    case "2":
+                        Console.WriteLine("Введите Id студента для активации:");
+                        int activateId = Int32.Parse(Console.ReadLine());
+                        ActivateStudent(activateId);
+                        break;
+
+                    case "3":
+                        Console.WriteLine("Введите Id студента для деактивации:");
+                        int deactivateId = Int32.Parse(Console.ReadLine());
+                        DeactivateStudent(deactivateId);
+                        break;
+
+                    case "4":
+                        DisplayStudents();
+                        break;
+
+                    case "5":
+                        SaveData();
+                        Environment.Exit(0);
+                        break;
+
+                    default:
+                        Console.WriteLine("Неверный выбор. Попробуйте снова.");
+                        break;
+                }
+            }
+        }
+    }
+}
